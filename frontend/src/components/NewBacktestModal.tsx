@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { ChevronRight, X } from 'lucide-react'
 import type { NewBacktestConfig } from '../types'
 
+// Available options for the form dropdowns
 const SYMBOLS = ['BTC/USD', 'ETH/USD', 'SOL/USD'] as const
 const STRATEGIES = [
   'SMA Crossover',
@@ -13,6 +14,9 @@ const STRATEGIES = [
 type Symbol   = (typeof SYMBOLS)[number]
 type Strategy = (typeof STRATEGIES)[number]
 
+// Modal form for configuring and launching a new backtest
+// onSubmit — called with form data when user clicks "Run Backtest"
+// onClose  — called when user cancels or clicks outside the modal
 export default function NewBacktestModal({
   onSubmit,
   onClose,
@@ -20,6 +24,7 @@ export default function NewBacktestModal({
   onSubmit: (config: NewBacktestConfig) => void
   onClose:  () => void
 }) {
+  // Form field state
   const [symbol,         setSymbol]         = useState<Symbol>('BTC/USD')
   const [startDate,      setStartDate]      = useState('2024-01-01')
   const [endDate,        setEndDate]        = useState('2024-03-31')
@@ -28,11 +33,12 @@ export default function NewBacktestModal({
   const [commission,     setCommission]     = useState(0.1)
 
   function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
+    e.preventDefault() // Prevent browser from reloading the page on form submit
     onSubmit({ symbol, startDate, endDate, strategy, initialCapital, commission })
   }
 
   return (
+    // Clicking the backdrop closes the modal; clicking inside does not (stopPropagation)
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal__header">

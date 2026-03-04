@@ -18,8 +18,7 @@ import './index.css'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
-// ── Nav config ────────────────────────────────────────────────────────────────
-
+// Sidebar navigation items
 const NAV_ITEMS: { icon: React.ReactNode; label: string; key: NavKey }[] = [
   { icon: <LayoutDashboard size={18} />, label: 'Dashboard', key: 'dashboard' },
   { icon: <TrendingUp size={18} />, label: 'Backtests', key: 'backtests' },
@@ -33,8 +32,7 @@ const TOOL_ITEMS: { icon: React.ReactNode; label: string; key: NavKey }[] = [
   { icon: <Settings size={18} />, label: 'Settings', key: 'settings' },
 ]
 
-// ── Page registry — add new pages here as the app grows ──────────────────────
-
+// Renders the correct page based on which nav item is active — add new pages here
 function PageContent({ activeNav }: { activeNav: NavKey }) {
   switch (activeNav) {
     case 'dashboard':
@@ -49,10 +47,11 @@ function PageContent({ activeNav }: { activeNav: NavKey }) {
   }
 }
 
-// ── Root layout ───────────────────────────────────────────────────────────────
-
+// Root layout: sidebar, topbar, and page content
 export default function App() {
   const [activeNav, setActiveNav] = useState<NavKey>('dashboard')
+
+  // Check if the backend is reachable and show a status indicator in the topbar
   const [backendStatus, setBackendStatus] = useState<'checking' | 'connected' | 'disconnected'>(
     'checking',
   )
@@ -71,7 +70,7 @@ export default function App() {
 
   return (
     <div className="app-root">
-      {/* ── Sidebar ── */}
+      {/* Sidebar */}
       <aside className="sidebar">
         <div className="sidebar-logo">
           <span className="logo-mark">FC</span>
@@ -114,7 +113,7 @@ export default function App() {
         </div>
       </aside>
 
-      {/* ── Main content ── */}
+      {/* Main content area */}
       <main className="main-content">
         <header className="topbar">
           <div className="search-bar">
@@ -122,6 +121,7 @@ export default function App() {
             <input placeholder="Search strategies, symbols..." />
           </div>
           <div className="topbar-right">
+            {/* API connection status dot */}
             <div className="status-pill">
               <Circle size={8} fill={statusColor} stroke="none" />
               <span>API {backendStatus}</span>

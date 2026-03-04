@@ -2,12 +2,13 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import os
 
+# Create the API app
 app = FastAPI(
     title="Fight Club API",
     version="1.0.0"
 )
 
-# CORS
+# Allow the frontend to make requests to this backend (required when they run on different ports)
 origins = os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",")
 app.add_middleware(
     CORSMiddleware,
@@ -18,6 +19,7 @@ app.add_middleware(
 )
 
 
+# Basic status check endpoints
 @app.get("/")
 async def root():
     return {"message": "Fight Club API is running"}
@@ -27,6 +29,7 @@ async def root():
 async def health_check():
     return {"status": "healthy"}
 
+# Start the server when this file is run directly
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(
