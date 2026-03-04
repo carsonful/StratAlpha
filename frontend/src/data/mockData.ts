@@ -1,8 +1,7 @@
-// Placeholder data — replace each export with real API calls once endpoints exist.
+// Placeholder data — replace with real API calls once the backend endpoints exist
 import type { BacktestRun, EquityPoint, MonthlyReturn, StrategyPerf, TradeLogEntry } from '../types'
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
-
+// Calculates how far below the peak the portfolio is at each point (the drawdown)
 function computeDrawdown(points: { date: string; value: number }[]): EquityPoint[] {
   let peak = -Infinity
   return points.map((p) => {
@@ -11,8 +10,7 @@ function computeDrawdown(points: { date: string; value: number }[]): EquityPoint
   })
 }
 
-// ── Equity curve (global default) ─────────────────────────────────────────────
-
+// Default equity curve shown on the dashboard
 export const equityCurveData: EquityPoint[] = computeDrawdown([
   { date: 'Jan 1',  value: 10000 },
   { date: 'Jan 8',  value: 10340 },
@@ -29,8 +27,7 @@ export const equityCurveData: EquityPoint[] = computeDrawdown([
   { date: 'Apr 1',  value: 12890 },
 ])
 
-// ── Monthly returns ───────────────────────────────────────────────────────────
-
+// Monthly return percentages for the bar chart
 export const monthlyReturnsData: MonthlyReturn[] = [
   { month: 'Jan', return: 8.2 },
   { month: 'Feb', return: -2.1 },
@@ -41,8 +38,7 @@ export const monthlyReturnsData: MonthlyReturn[] = [
   { month: 'Jul', return: 4.3 },
 ]
 
-// ── Per-run trade logs ────────────────────────────────────────────────────────
-
+// Trade logs for each backtest run
 const bt001TradeLog: TradeLogEntry[] = [
   { tradeId: 'T-001', entryDate: 'Jan 3',  exitDate: 'Jan 8',  side: 'Long',  entryPrice: 42150, exitPrice: 43800, pnl:  391, pnlPct: '+3.9%'  },
   { tradeId: 'T-002', entryDate: 'Jan 11', exitDate: 'Jan 16', side: 'Long',  entryPrice: 43200, exitPrice: 42600, pnl: -140, pnlPct: '-1.4%'  },
@@ -95,8 +91,7 @@ const bt004TradeLog: TradeLogEntry[] = [
   { tradeId: 'T-010', entryDate: 'May 3',  exitDate: 'May 7',  side: 'Long',  entryPrice: 65100, exitPrice: 66200, pnl:  169, pnlPct: '+1.7%'  },
 ]
 
-// ── Recent runs ───────────────────────────────────────────────────────────────
-
+// All backtest runs shown in the dashboard table
 export const recentRuns: BacktestRun[] = [
   {
     id:             'BT-001',
@@ -218,8 +213,7 @@ export const recentRuns: BacktestRun[] = [
   },
 ]
 
-// ── Strategy performance comparison ──────────────────────────────────────────
-
+// Strategy summary data for the comparison table
 export const strategyPerfData: StrategyPerf[] = [
   { strategy: 'SMA Crossover',      symbol: 'BTC/USD', totalReturn: '+28.9%', returnNum:  28.9, sharpe: 1.84, maxDrawdown: '-8.2%',  winRate: '61%' },
   { strategy: 'RSI Mean Reversion', symbol: 'ETH/USD', totalReturn: '+12.4%', returnNum:  12.4, sharpe: 1.21, maxDrawdown: '-15.6%', winRate: '54%' },
