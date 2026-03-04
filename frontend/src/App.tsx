@@ -12,7 +12,11 @@ import {
   ShieldCheck,
   Circle,
 } from 'lucide-react'
-import Dashboard from './pages/Dashboard'
+import Analytics  from './pages/Analytics'
+import Backtests  from './pages/Backtests'
+import Dashboard  from './pages/Dashboard'
+import Data       from './pages/Data'
+import Strategies from './pages/Strategies'
 import type { NavKey } from './types'
 import './index.css'
 
@@ -35,8 +39,11 @@ const TOOL_ITEMS: { icon: React.ReactNode; label: string; key: NavKey }[] = [
 // Renders the correct page based on which nav item is active — add new pages here
 function PageContent({ activeNav }: { activeNav: NavKey }) {
   switch (activeNav) {
-    case 'dashboard':
-      return <Dashboard />
+    case 'dashboard':  return <Dashboard />
+    case 'backtests':  return <Backtests />
+    case 'strategies': return <Strategies />
+    case 'data':       return <Data />
+    case 'analytics':  return <Analytics />
     default:
       return (
         <div className="page-placeholder">

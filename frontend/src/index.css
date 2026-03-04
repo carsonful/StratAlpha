@@ -926,8 +926,144 @@ button {
   flex-shrink: 0;
 }
 
+/* ── Strategy cards (Strategies page) ───────────────────────────────────────── */
+
+.strategy-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.strategy-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px 22px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 0.15s, box-shadow 0.15s;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.strategy-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.09);
+}
+
+.strategy-card--active {
+  border-color: #818cf8;
+}
+
+.strategy-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.strategy-card__title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.strategy-card__runs {
+  font-size: 11px;
+  color: #aaa;
+  margin-top: 2px;
+}
+
+.strategy-card__metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.strategy-card__metric {
+  background: #f9f9fb;
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.strategy-card__metric-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.strategy-card__metric-value {
+  font-size: 16px;
+  font-weight: 800;
+  color: #1a1a2e;
+}
+
+/* ── OHLCV table (Data page) ─────────────────────────────────────────────────── */
+
+.ohlcv-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.ohlcv-table th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 8px 12px;
+  border-bottom: 1px solid #f0f0f0;
+  white-space: nowrap;
+}
+
+.ohlcv-table th.num,
+.ohlcv-table td.num {
+  text-align: right;
+}
+
+.ohlcv-table td {
+  padding: 11px 12px;
+  border-bottom: 1px solid #f9f9f9;
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+.ohlcv-table tr:last-child td {
+  border-bottom: none;
+}
+
+.ohlcv-candle-high { color: #16a34a; font-weight: 600; }
+.ohlcv-candle-low  { color: #dc2626; font-weight: 600; }
+
+.ohlcv-stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+/* ── Analytics grid (Analytics page) ────────────────────────────────────────── */
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
 /* ── Responsive ────────────────────────────────────────────────────────────── */
 @media (max-width: 1100px) {
+  .strategy-cards-grid,
+  .analytics-grid {
+    grid-template-columns: 1fr;
+  }
+  .ohlcv-stats-row {
+    grid-template-columns: 1fr 1fr;
+  }
   .cards-grid {
     grid-template-columns: repeat(2, 1fr);
   }

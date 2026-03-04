@@ -1,5 +1,5 @@
 // Placeholder data — replace with real API calls once the backend endpoints exist
-import type { BacktestRun, EquityPoint, MonthlyReturn, StrategyPerf, TradeLogEntry } from '../types'
+import type { BacktestRun, EquityPoint, MonthlyReturn, OHLCVCandle, StrategyDetail, StrategyPerf, TradeLogEntry } from '../types'
 
 // Calculates how far below the peak the portfolio is at each point (the drawdown)
 function computeDrawdown(points: { date: string; value: number }[]): EquityPoint[] {
@@ -219,4 +219,113 @@ export const strategyPerfData: StrategyPerf[] = [
   { strategy: 'RSI Mean Reversion', symbol: 'ETH/USD', totalReturn: '+12.4%', returnNum:  12.4, sharpe: 1.21, maxDrawdown: '-15.6%', winRate: '54%' },
   { strategy: 'Bollinger Breakout', symbol: 'SOL/USD', totalReturn: '-4.1%',  returnNum:  -4.1, sharpe: 0.47, maxDrawdown: '-22.3%', winRate: '43%' },
   { strategy: 'MACD Trend Follow',  symbol: 'BTC/USD', totalReturn: '+7.6%',  returnNum:   7.6, sharpe: 1.05, maxDrawdown: '-5.9%',  winRate: '58%' },
+]
+
+// ── OHLCV candlestick data per symbol (Data page) ─────────────────────────────
+
+export const ohlcvData: Record<string, OHLCVCandle[]> = {
+  'BTC/USD': [
+    { date: '2024-01-01', open: 42100, high: 43200, low: 41800, close: 42950, volume: 1.24 },
+    { date: '2024-01-02', open: 42950, high: 44100, low: 42700, close: 43800, volume: 1.87 },
+    { date: '2024-01-03', open: 43800, high: 44500, low: 43100, close: 43420, volume: 0.93 },
+    { date: '2024-01-04', open: 43420, high: 43900, low: 42500, close: 42780, volume: 1.41 },
+    { date: '2024-01-05', open: 42780, high: 43600, low: 42200, close: 43300, volume: 1.05 },
+    { date: '2024-01-08', open: 43300, high: 45200, low: 43100, close: 44900, volume: 2.18 },
+    { date: '2024-01-09', open: 44900, high: 45800, low: 44400, close: 45100, volume: 1.76 },
+    { date: '2024-01-10', open: 45100, high: 46200, low: 44800, close: 46050, volume: 2.03 },
+    { date: '2024-01-11', open: 46050, high: 46500, low: 45200, close: 45600, volume: 1.32 },
+    { date: '2024-01-12', open: 45600, high: 46800, low: 45300, close: 46400, volume: 1.61 },
+    { date: '2024-01-15', open: 46400, high: 47200, low: 45900, close: 47100, volume: 1.95 },
+    { date: '2024-01-16', open: 47100, high: 47800, low: 46500, close: 46800, volume: 1.44 },
+    { date: '2024-01-17', open: 46800, high: 47500, low: 46100, close: 47300, volume: 1.28 },
+    { date: '2024-01-18', open: 47300, high: 48100, low: 46900, close: 47900, volume: 1.82 },
+    { date: '2024-01-19', open: 47900, high: 48600, low: 47400, close: 48200, volume: 2.11 },
+  ],
+  'ETH/USD': [
+    { date: '2024-01-01', open: 2190, high: 2260, low: 2150, close: 2230, volume: 14.2 },
+    { date: '2024-01-02', open: 2230, high: 2310, low: 2200, close: 2290, volume: 18.7 },
+    { date: '2024-01-03', open: 2290, high: 2340, low: 2250, close: 2270, volume: 11.3 },
+    { date: '2024-01-04', open: 2270, high: 2290, low: 2190, close: 2210, volume: 15.6 },
+    { date: '2024-01-05', open: 2210, high: 2260, low: 2180, close: 2240, volume: 12.9 },
+    { date: '2024-01-08', open: 2240, high: 2380, low: 2230, close: 2360, volume: 21.4 },
+    { date: '2024-01-09', open: 2360, high: 2420, low: 2330, close: 2400, volume: 19.8 },
+    { date: '2024-01-10', open: 2400, high: 2460, low: 2380, close: 2440, volume: 17.2 },
+    { date: '2024-01-11', open: 2440, high: 2470, low: 2390, close: 2410, volume: 14.5 },
+    { date: '2024-01-12', open: 2410, high: 2500, low: 2400, close: 2480, volume: 20.1 },
+    { date: '2024-01-15', open: 2480, high: 2530, low: 2450, close: 2510, volume: 16.3 },
+    { date: '2024-01-16', open: 2510, high: 2550, low: 2470, close: 2490, volume: 13.8 },
+    { date: '2024-01-17', open: 2490, high: 2540, low: 2460, close: 2520, volume: 15.1 },
+    { date: '2024-01-18', open: 2520, high: 2580, low: 2500, close: 2560, volume: 18.4 },
+    { date: '2024-01-19', open: 2560, high: 2620, low: 2540, close: 2600, volume: 22.7 },
+  ],
+  'SOL/USD': [
+    { date: '2024-01-01', open: 96,  high: 102, low: 94,  close: 99,  volume: 420 },
+    { date: '2024-01-02', open: 99,  high: 108, low: 97,  close: 105, volume: 580 },
+    { date: '2024-01-03', open: 105, high: 110, low: 102, close: 104, volume: 390 },
+    { date: '2024-01-04', open: 104, high: 107, low: 98,  close: 100, volume: 460 },
+    { date: '2024-01-05', open: 100, high: 105, low: 97,  close: 103, volume: 410 },
+    { date: '2024-01-08', open: 103, high: 112, low: 101, close: 110, volume: 640 },
+    { date: '2024-01-09', open: 110, high: 116, low: 108, close: 114, volume: 710 },
+    { date: '2024-01-10', open: 114, high: 118, low: 111, close: 116, volume: 530 },
+    { date: '2024-01-11', open: 116, high: 119, low: 112, close: 113, volume: 480 },
+    { date: '2024-01-12', open: 113, high: 120, low: 111, close: 118, volume: 590 },
+    { date: '2024-01-15', open: 118, high: 124, low: 116, close: 122, volume: 670 },
+    { date: '2024-01-16', open: 122, high: 126, low: 119, close: 121, volume: 510 },
+    { date: '2024-01-17', open: 121, high: 125, low: 118, close: 123, volume: 490 },
+    { date: '2024-01-18', open: 123, high: 129, low: 121, close: 127, volume: 620 },
+    { date: '2024-01-19', open: 127, high: 132, low: 125, close: 130, volume: 750 },
+  ],
+}
+
+// ── Strategy detail data with run counts and equity curves (Strategies page) ──
+
+export const strategyDetailData: StrategyDetail[] = [
+  {
+    ...strategyPerfData[0], // SMA Crossover
+    runs: 2,
+    equityCurve: computeDrawdown([
+      { date: 'Nov', value: 10000 },
+      { date: 'Dec', value: 10600 },
+      { date: 'Jan', value: 10420 },
+      { date: 'Feb', value: 11440 },
+      { date: 'Mar', value: 11720 },
+      { date: 'Apr', value: 12890 },
+    ]),
+  },
+  {
+    ...strategyPerfData[1], // RSI Mean Reversion
+    runs: 1,
+    equityCurve: computeDrawdown([
+      { date: 'Nov', value: 10000 },
+      { date: 'Dec', value: 10180 },
+      { date: 'Jan', value: 8440  },
+      { date: 'Feb', value: 9780  },
+      { date: 'Mar', value: 10290 },
+      { date: 'Apr', value: 11240 },
+    ]),
+  },
+  {
+    ...strategyPerfData[2], // Bollinger Breakout
+    runs: 1,
+    equityCurve: computeDrawdown([
+      { date: 'Nov', value: 10000 },
+      { date: 'Dec', value: 10580 },
+      { date: 'Jan', value: 9650  },
+      { date: 'Feb', value: 7770  },
+      { date: 'Mar', value: 8920  },
+      { date: 'Apr', value: 9590  },
+    ]),
+  },
+  {
+    ...strategyPerfData[3], // MACD Trend Follow
+    runs: 1,
+    equityCurve: computeDrawdown([
+      { date: 'Nov', value: 10000 },
+      { date: 'Dec', value: 10260 },
+      { date: 'Jan', value: 10150 },
+      { date: 'Feb', value: 10390 },
+      { date: 'Mar', value: 10530 },
+      { date: 'Apr', value: 10760 },
+    ]),
+  },
 ]

@@ -57,6 +57,22 @@ export interface StrategyPerf {
   winRate:     string
 }
 
+// A single OHLCV candlestick data point
+export interface OHLCVCandle {
+  date:   string
+  open:   number
+  high:   number
+  low:    number
+  close:  number
+  volume: number
+}
+
+// Extended strategy data used on the Strategies page (adds run count and equity curve preview)
+export interface StrategyDetail extends StrategyPerf {
+  runs:        number
+  equityCurve: EquityPoint[]
+}
+
 // Form data submitted when starting a new backtest
 export interface NewBacktestConfig {
   symbol:         string
