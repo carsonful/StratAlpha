@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { ChevronRight, X } from 'lucide-react'
 import type { NewBacktestConfig } from '../types'
+import SlippageSettings from './SlippageSettings'
 
 // Available options for the form dropdowns
 const SYMBOLS = ['BTC/USD', 'ETH/USD', 'SOL/USD'] as const
@@ -31,10 +32,26 @@ export default function NewBacktestModal({
   const [strategy,       setStrategy]       = useState<Strategy>('SMA Crossover')
   const [initialCapital, setInitialCapital] = useState(10000)
   const [commission,     setCommission]     = useState(0.1)
+  // Slippage controls (optional fields added to NewBacktestConfig)
+  const [slippageModel, setSlippageModel] = useState<NewBacktestConfig['slippageModel']>('volatility')
+  const [slippagePct,   setSlippagePct]   = useState<number>(0.1)
+  const [volatilityScale, setVolatilityScale] = useState<boolean>(true)
+  const [volumeScale, setVolumeScale] = useState<boolean>(false)
 
   function handleSubmit(e: React.FormEvent) {
     e.preventDefault() // Prevent browser from reloading the page on form submit
-    onSubmit({ symbol, startDate, endDate, strategy, initialCapital, commission })
+    onSubmit({
+      symbol,
+      startDate,
+      endDate,
+      strategy,
+      initialCapital,
+      commission,
+      slippageModel,
+      slippagePct,
+      volatilityScale,
+      volumeScale,
+    })
   }
 
   return (
@@ -125,6 +142,20 @@ export default function NewBacktestModal({
                   required
                 />
               </div>
+            </div>
+
+            <div className="modal__section">
+              <h3>Execution / Slippage</h3>
+              <SlippageSettings
+                model={slippageModel || 'none'}
+                pct={slippagePct}
+                volatilityScale={volatilityScale}
+                volumeScale={volumeScale}
+                onModelChange={(v) => setSlippageModel(v as NewBacktestConfig['slippageModel'])}
+                onPctChange={(v) => setSlippagePct(v)}
+                onVolatilityToggle={(v) => setVolatilityScale(v)}
+                onVolumeToggle={(v) => setVolumeScale(v)}
+              />
             </div>
           </div>
 

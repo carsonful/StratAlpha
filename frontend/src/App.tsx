@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import {
   LayoutDashboard,
   TrendingUp,
@@ -17,7 +17,9 @@ import Backtests  from './pages/Backtests'
 import Dashboard  from './pages/Dashboard'
 import Data       from './pages/Data'
 import Strategies from './pages/Strategies'
+import SettingsPage   from './pages/Settings'
 import type { NavKey } from './types'
+import { useAuth } from './context/Auth'
 import './index.css'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
@@ -44,6 +46,7 @@ function PageContent({ activeNav }: { activeNav: NavKey }) {
     case 'strategies': return <Strategies />
     case 'data':       return <Data />
     case 'analytics':  return <Analytics />
+  case 'settings':   return <SettingsPage />
     default:
       return (
         <div className="page-placeholder">
@@ -57,6 +60,23 @@ function PageContent({ activeNav }: { activeNav: NavKey }) {
 // Root layout: sidebar, topbar, and page content
 export default function App() {
   const [activeNav, setActiveNav] = useState<NavKey>('dashboard')
+  const { user, logout } = useAuth()
+  const [showUserMenu, setShowUserMenu] = useState(false)
+  const avatarRef = useRef<HTMLDivElement | null>(null)
+  const menuRef = useRef<HTMLDivElement | null>(null)
+
+  // Close user menu when clicking outside
+  useEffect(() => {
+    function onDocClick(e: MouseEvent) {
+      const target = e.target as Node
+      if (!avatarRef?.current || !menuRef?.current) return
+      if (!avatarRef.current.contains(target) && !menuRef.current.contains(target)) {
+        setShowUserMenu(false)
+      }
+    }
+    document.addEventListener('mousedown', onDocClick)
+    return () => document.removeEventListener('mousedown', onDocClick)
+  }, [])
 
   // Check if the backend is reachable and show a status indicator in the topbar
   const [backendStatus, setBackendStatus] = useState<'checking' | 'connected' | 'disconnected'>(
@@ -113,7 +133,7 @@ export default function App() {
         </nav>
 
         <div className="sidebar-footer">
-          <button className="nav-item nav-item--danger">
+          <button className="nav-item nav-item--danger" onClick={() => logout()}>
             <LogOut size={18} />
             <span>Log out</span>
           </button>
@@ -127,7 +147,7 @@ export default function App() {
             <Search size={16} className="search-icon" />
             <input placeholder="Search strategies, symbols..." />
           </div>
-          <div className="topbar-right">
+            <div className="topbar-right">
             {/* API connection status dot */}
             <div className="status-pill">
               <Circle size={8} fill={statusColor} stroke="none" />
@@ -136,7 +156,32 @@ export default function App() {
             <button className="icon-btn" aria-label="Notifications">
               <Bell size={18} />
             </button>
-            <div className="avatar">TC</div>
+            <div
+              className="avatar"
+              role="button"
+              ref={avatarRef as any}
+              onClick={() => setShowUserMenu((s) => !s)}
+              aria-label="User menu"
+            >
+              {user ? user.name.split(' ').map((n: string) => n[0]).slice(0,2).join('') : 'TC'}
+            </div>
+
+            {showUserMenu && (
+              <div className="user-menu" ref={menuRef as any}>
+                <div
+                  className="user-menu__item"
+                  onClick={() => { setActiveNav('settings'); setShowUserMenu(false) }}
+                >
+                  User settings
+                </div>
+                <div
+                  className="user-menu__item"
+                  onClick={() => { logout(); setShowUserMenu(false) }}
+                >
+                  Sign out
+                </div>
+              </div>
+            )}
           </div>
         </header>
 

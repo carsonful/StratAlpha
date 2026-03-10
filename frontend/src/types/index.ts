@@ -81,6 +81,18 @@ export interface NewBacktestConfig {
   strategy:       string
   initialCapital: number
   commission:     number
+  // Slippage configuration for more realistic execution
+  slippageModel?: 'none' | 'fixed' | 'volatility' | 'volume' | 'volatility_volume'
+  slippagePct?: number // base slippage percent (applies for 'fixed' and as baseline for others)
+  volatilityScale?: boolean
+  volumeScale?: boolean
+}
+
+// Simple user profile saved after login/register
+export interface User {
+  id: string
+  name: string
+  email: string
 }
 
 // Valid sidebar page keys
