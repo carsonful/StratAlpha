@@ -34,3 +34,10 @@ frontend/build/
 .idea/
 *.swp
 .claude
+
+# LEAN generated files
+lean/data/
+lean/.tmp/
+lean/results/
+lean/storage/
+lean/.lean/
