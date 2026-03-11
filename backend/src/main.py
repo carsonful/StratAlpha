@@ -2,7 +2,6 @@
 #from fastapi.middleware.cors import CORSMiddleware
 import os
 
-<<<<<<< HEAD
 from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 import pandas as pd
@@ -10,9 +9,6 @@ from io import StringIO
 #from backend.src.backtests1 import getBack
 from src.backtests1 import getBack
 
-=======
-# Create the API app
->>>>>>> a73d797d121646d5c0ef7ecc146b9f9f1c6b90f6
 app = FastAPI(
     title="Fight Club API",
     version="1.0.0"
