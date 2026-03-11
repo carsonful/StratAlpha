@@ -13,6 +13,7 @@ import {
   Circle,
 } from 'lucide-react'
 import Dashboard from './pages/Dashboard'
+import Backtests from './pages/Backtests'
 import type { NavKey } from './types'
 import './index.css'
 
@@ -39,6 +40,8 @@ function PageContent({ activeNav }: { activeNav: NavKey }) {
   switch (activeNav) {
     case 'dashboard':
       return <Dashboard />
+    case 'backtests':
+      return <Backtests />
     default:
       return (
         <div className="page-placeholder">

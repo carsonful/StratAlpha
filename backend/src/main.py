@@ -1,6 +1,13 @@
-from fastapi import FastAPI
-from fastapi.middleware.cors import CORSMiddleware
+#from fastapi import FastAPI
+#from fastapi.middleware.cors import CORSMiddleware
 import os
+
+from fastapi import FastAPI, UploadFile, File
+from fastapi.middleware.cors import CORSMiddleware
+import pandas as pd
+from io import StringIO
+#from backend.src.backtests1 import getBack
+from src.backtests1 import getBack
 
 app = FastAPI(
     title="Fight Club API",
@@ -35,3 +42,21 @@ if __name__ == "__main__":
         port=int(os.getenv("API_PORT", 8000)),
         reload=True
     )
+
+
+@app.post("/backtest")
+async def max_open(file: UploadFile = File(...)):
+    contents = await file.read()
+    csv_text = contents.decode("utf-8")
+    #df = pd.read_csv(StringIO(csv_text), sep="\t")
+
+    df = pd.read_csv(StringIO(csv_text), sep=None, engine="python")
+    df.columns = df.columns.str.strip()
+
+
+    try:
+        val = getBack(df)
+        return {"getBack": val}
+    except ValueError as e:
+        return {"error": str(e)}
+    
