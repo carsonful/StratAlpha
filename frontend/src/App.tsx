@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import {
   LayoutDashboard,
   TrendingUp,
@@ -12,15 +12,24 @@ import {
   ShieldCheck,
   Circle,
 } from 'lucide-react'
+<<<<<<< HEAD
 import Dashboard from './pages/Dashboard'
 import Backtests from './pages/Backtests'
+=======
+import Analytics  from './pages/Analytics'
+import Backtests  from './pages/Backtests'
+import Dashboard  from './pages/Dashboard'
+import Data       from './pages/Data'
+import Strategies from './pages/Strategies'
+import SettingsPage   from './pages/Settings'
+>>>>>>> a73d797d121646d5c0ef7ecc146b9f9f1c6b90f6
 import type { NavKey } from './types'
+import { useAuth } from './context/Auth'
 import './index.css'
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 
-// ── Nav config ────────────────────────────────────────────────────────────────
-
+// Sidebar navigation items
 const NAV_ITEMS: { icon: React.ReactNode; label: string; key: NavKey }[] = [
   { icon: <LayoutDashboard size={18} />, label: 'Dashboard', key: 'dashboard' },
   { icon: <TrendingUp size={18} />, label: 'Backtests', key: 'backtests' },
@@ -34,14 +43,22 @@ const TOOL_ITEMS: { icon: React.ReactNode; label: string; key: NavKey }[] = [
   { icon: <Settings size={18} />, label: 'Settings', key: 'settings' },
 ]
 
-// ── Page registry — add new pages here as the app grows ──────────────────────
-
+// Renders the correct page based on which nav item is active — add new pages here
 function PageContent({ activeNav }: { activeNav: NavKey }) {
   switch (activeNav) {
+<<<<<<< HEAD
     case 'dashboard':
       return <Dashboard />
     case 'backtests':
       return <Backtests />
+=======
+    case 'dashboard':  return <Dashboard />
+    case 'backtests':  return <Backtests />
+    case 'strategies': return <Strategies />
+    case 'data':       return <Data />
+    case 'analytics':  return <Analytics />
+  case 'settings':   return <SettingsPage />
+>>>>>>> a73d797d121646d5c0ef7ecc146b9f9f1c6b90f6
     default:
       return (
         <div className="page-placeholder">
@@ -52,10 +69,28 @@ function PageContent({ activeNav }: { activeNav: NavKey }) {
   }
 }
 
-// ── Root layout ───────────────────────────────────────────────────────────────
-
+// Root layout: sidebar, topbar, and page content
 export default function App() {
   const [activeNav, setActiveNav] = useState<NavKey>('dashboard')
+  const { user, logout } = useAuth()
+  const [showUserMenu, setShowUserMenu] = useState(false)
+  const avatarRef = useRef<HTMLDivElement | null>(null)
+  const menuRef = useRef<HTMLDivElement | null>(null)
+
+  // Close user menu when clicking outside
+  useEffect(() => {
+    function onDocClick(e: MouseEvent) {
+      const target = e.target as Node
+      if (!avatarRef?.current || !menuRef?.current) return
+      if (!avatarRef.current.contains(target) && !menuRef.current.contains(target)) {
+        setShowUserMenu(false)
+      }
+    }
+    document.addEventListener('mousedown', onDocClick)
+    return () => document.removeEventListener('mousedown', onDocClick)
+  }, [])
+
+  // Check if the backend is reachable and show a status indicator in the topbar
   const [backendStatus, setBackendStatus] = useState<'checking' | 'connected' | 'disconnected'>(
     'checking',
   )
@@ -74,7 +109,7 @@ export default function App() {
 
   return (
     <div className="app-root">
-      {/* ── Sidebar ── */}
+      {/* Sidebar */}
       <aside className="sidebar">
         <div className="sidebar-logo">
           <span className="logo-mark">FC</span>
@@ -110,21 +145,22 @@ export default function App() {
         </nav>
 
         <div className="sidebar-footer">
-          <button className="nav-item nav-item--danger">
+          <button className="nav-item nav-item--danger" onClick={() => logout()}>
             <LogOut size={18} />
             <span>Log out</span>
           </button>
         </div>
       </aside>
 
-      {/* ── Main content ── */}
+      {/* Main content area */}
       <main className="main-content">
         <header className="topbar">
           <div className="search-bar">
             <Search size={16} className="search-icon" />
             <input placeholder="Search strategies, symbols..." />
           </div>
-          <div className="topbar-right">
+            <div className="topbar-right">
+            {/* API connection status dot */}
             <div className="status-pill">
               <Circle size={8} fill={statusColor} stroke="none" />
               <span>API {backendStatus}</span>
@@ -132,7 +168,32 @@ export default function App() {
             <button className="icon-btn" aria-label="Notifications">
               <Bell size={18} />
             </button>
-            <div className="avatar">TC</div>
+            <div
+              className="avatar"
+              role="button"
+              ref={avatarRef as any}
+              onClick={() => setShowUserMenu((s) => !s)}
+              aria-label="User menu"
+            >
+              {user ? user.name.split(' ').map((n: string) => n[0]).slice(0,2).join('') : 'TC'}
+            </div>
+
+            {showUserMenu && (
+              <div className="user-menu" ref={menuRef as any}>
+                <div
+                  className="user-menu__item"
+                  onClick={() => { setActiveNav('settings'); setShowUserMenu(false) }}
+                >
+                  User settings
+                </div>
+                <div
+                  className="user-menu__item"
+                  onClick={() => { logout(); setShowUserMenu(false) }}
+                >
+                  Sign out
+                </div>
+              </div>
+            )}
           </div>
         </header>
 

@@ -24,15 +24,13 @@ import NewBacktestModal from '../components/NewBacktestModal'
 import { equityCurveData, monthlyReturnsData, recentRuns, strategyPerfData } from '../data/mockData'
 import type { BacktestRun, NewBacktestConfig } from '../types'
 
-// ── Constants ─────────────────────────────────────────────────────────────────
-
+// Bar colors for the monthly returns chart (positive = purple, negative = red; darker when selected)
 const BAR_COLOR_POS          = '#818cf8'
 const BAR_COLOR_NEG          = '#fca5a5'
 const BAR_COLOR_POS_SELECTED = '#4f46e5'
 const BAR_COLOR_NEG_SELECTED = '#dc2626'
 
-// ── Sub-components ────────────────────────────────────────────────────────────
-
+// Summary card shown at the top of the dashboard
 function StatCard({
   title,
   value,
@@ -65,6 +63,7 @@ function StatCard({
   )
 }
 
+// Colored dot + label showing a run's status (complete / running / failed)
 function StatusDot({ status }: { status: BacktestRun['status'] }) {
   const colorClass =
     status === 'complete'
@@ -82,6 +81,7 @@ function StatusDot({ status }: { status: BacktestRun['status'] }) {
   )
 }
 
+// A single label + value tile inside the detail panel's metric grid
 function MetricTile({ label, value }: { label: string; value: string }) {
   return (
     <div className="detail-metric">
@@ -91,6 +91,7 @@ function MetricTile({ label, value }: { label: string; value: string }) {
   )
 }
 
+// Slide-in panel showing full details (metrics, equity curve, trade log) for a selected run
 function DetailPanel({ run, onClose }: { run: BacktestRun; onClose: () => void }) {
   return (
     <>
@@ -106,7 +107,7 @@ function DetailPanel({ run, onClose }: { run: BacktestRun; onClose: () => void }
         </div>
 
         <div className="detail-panel__body">
-          {/* 6-metric grid */}
+          {/* 6-metric summary grid */}
           <div className="detail-metrics-grid">
             <MetricTile label="Total Return"  value={run.totalReturn} />
             <MetricTile label="Sharpe Ratio"  value={String(run.sharpe)} />
@@ -116,7 +117,7 @@ function DetailPanel({ run, onClose }: { run: BacktestRun; onClose: () => void }
             <MetricTile label="Avg Duration"  value={run.avgDuration} />
           </div>
 
-          {/* Mini equity curve */}
+          {/* Mini equity curve chart */}
           {run.equityCurve.length > 0 && (
             <div>
               <p className="detail-section-title">Equity Curve</p>
@@ -160,7 +161,7 @@ function DetailPanel({ run, onClose }: { run: BacktestRun; onClose: () => void }
             </div>
           )}
 
-          {/* Trade log */}
+          {/* Full trade log table */}
           {run.tradeLog.length > 0 && (
             <div>
               <p className="detail-section-title">Trade Log</p>
@@ -208,6 +209,7 @@ function DetailPanel({ run, onClose }: { run: BacktestRun; onClose: () => void }
   )
 }
 
+// Symbol and status filter dropdowns above the runs table
 function FilterBar({
   symbolFilter,
   setSymbolFilter,
@@ -248,6 +250,7 @@ function FilterBar({
   )
 }
 
+// Strategy comparison table with proportional bar indicators for return and Sharpe ratio
 function StrategyPerfSection() {
   const maxReturn = Math.max(...strategyPerfData.map((s) => Math.abs(s.returnNum)))
   const maxSharpe = Math.max(...strategyPerfData.map((s) => s.sharpe))
@@ -306,34 +309,19 @@ function StrategyPerfSection() {
   )
 }
 
-// ── Dashboard page ────────────────────────────────────────────────────────────
-
+// Main dashboard page — stat cards, charts, strategy table, and backtest runs table
 export default function Dashboard() {
-  // Mutable run list so new submissions are reflected immediately
   const [runs, setRuns] = useState<BacktestRun[]>(recentRuns)
-
-  // Detail panel
-  const [selectedRun, setSelectedRun] = useState<BacktestRun | null>(null)
-
-  // New Backtest modal
-  const [showModal, setShowModal] = useState(false)
-
-  // Stat card → row highlight
-  const [highlightedRunId, setHighlightedRunId] = useState<string | null>(null)
+  const [selectedRun, setSelectedRun] = useState<BacktestRun | null>(null)  // Detail panel
+  const [showModal, setShowModal] = useState(false)                          // New Backtest modal
+  const [highlightedRunId, setHighlightedRunId] = useState<string | null>(null) // Stat card → table highlight
   const tableRef = useRef<HTMLDivElement>(null)
-
-  // Equity curve run selector
-  const [selectedEquityRunId, setEquityRunId] = useState('BT-001')
-
-  // Monthly bar highlight
-  const [selectedMonth, setSelectedMonth] = useState<string | null>(null)
-
-  // Table filters
-  const [symbolFilter, setSymbolFilter] = useState('All')
+  const [selectedEquityRunId, setEquityRunId] = useState('BT-001')          // Equity chart run selector
+  const [selectedMonth, setSelectedMonth] = useState<string | null>(null)   // Monthly bar selection
+  const [symbolFilter, setSymbolFilter] = useState('All')                   // Table filters
   const [statusFilter, setStatusFilter] = useState('All')
 
-  // ── Derived ──────────────────────────────────────────────────────────────
-
+  // Apply active filters to the runs list
   const filteredRuns = runs.filter(
     (r) =>
       (symbolFilter === 'All' || r.symbol === symbolFilter) &&
@@ -343,14 +331,14 @@ export default function Dashboard() {
   const equityData =
     runs.find((r) => r.id === selectedEquityRunId)?.equityCurve ?? equityCurveData
 
-  // ── Handlers ─────────────────────────────────────────────────────────────
-
+  // Clicking a stat card scrolls to the table and briefly highlights the matching row
   function handleStatCardClick(runId: string) {
     setHighlightedRunId(runId)
     tableRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
     setTimeout(() => setHighlightedRunId(null), 3000)
   }
 
+  // Adds a new "running" run to the top of the list when the modal is submitted
   function handleNewBacktestSubmit(config: NewBacktestConfig) {
     const nextId = `BT-${String(runs.length + 1).padStart(3, '0')}`
     const newRun: BacktestRun = {
@@ -376,11 +364,9 @@ export default function Dashboard() {
     setShowModal(false)
   }
 
-  // ── Render ────────────────────────────────────────────────────────────────
-
   return (
     <>
-      {/* Overlays — rendered first so they stack above everything */}
+      {/* Overlays */}
       {selectedRun && (
         <DetailPanel run={selectedRun} onClose={() => setSelectedRun(null)} />
       )}
@@ -402,7 +388,7 @@ export default function Dashboard() {
         </button>
       </section>
 
-      {/* Stat cards */}
+      {/* Summary stat cards */}
       <div className="cards-grid">
         <StatCard
           title="Best Total Return"
@@ -439,7 +425,7 @@ export default function Dashboard() {
 
       {/* Charts row */}
       <div className="charts-row">
-        {/* Equity curve with run selector + drawdown overlay */}
+        {/* Equity curve with drawdown overlay and run selector */}
         <div className="chart-card chart-card--wide">
           <div className="chart-header">
             <div>
@@ -530,7 +516,7 @@ export default function Dashboard() {
           </ResponsiveContainer>
         </div>
 
-        {/* Monthly returns — bars colored by pos/neg, clickable */}
+        {/* Monthly returns bar chart — click a bar to highlight it */}
         <div className="chart-card">
           <div className="chart-header">
             <div>
@@ -581,10 +567,10 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Strategy performance comparison */}
+      {/* Strategy performance comparison table */}
       <StrategyPerfSection />
 
-      {/* Filter bar + runs table */}
+      {/* Filterable backtest runs table */}
       <div className="table-card" ref={tableRef}>
         <div className="table-header">
           <div>

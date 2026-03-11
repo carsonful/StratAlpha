@@ -250,6 +250,77 @@ button {
   justify-content: center;
 }
 
+/* Auth / login styles */
+.auth-page-root {
+  display: grid;
+  grid-template-columns: 420px 420px;
+  gap: 28px;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: calc(100vh - 40px);
+  margin-top: 20px;
+}
+
+.auth-hero {
+  background: linear-gradient(180deg, #6b7280 0%, #4f46e5 100%);
+  color: #fff;
+  border-radius: 16px;
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: flex-start;
+  box-shadow: 0 10px 30px rgba(79,70,229,0.12);
+}
+
+.hero-brand {
+  font-size: 28px;
+  font-weight: 800;
+}
+
+.hero-sub {
+  color: rgba(255,255,255,0.9);
+  opacity: 0.95;
+  font-size: 14px;
+}
+
+.auth-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 28px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+}
+
+.auth-form { display: flex; flex-direction: column; gap: 10px; margin-top: 8px }
+.auth-actions { margin-top: 12px; display:flex; gap:8px }
+.auth-footer { margin-top: 14px; display:flex; gap:8px; align-items:center }
+.link-btn { color: #4f46e5; background:none; border:none; cursor:pointer; font-weight:600 }
+.form-error { color: #b91c1c; font-size: 13px; margin-top:6px }
+.muted { color: #666; margin-top:6px }
+
+/* user menu */
+.topbar { position: relative }
+.user-menu {
+  position: absolute;
+  right: 12px;
+  top: 52px;
+  background: #fff;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  padding: 8px 6px;
+  min-width: 160px;
+  z-index: 40;
+}
+.user-menu__item {
+  padding: 8px 12px;
+  border-radius: 8px;
+  color: #222;
+  font-weight: 600;
+}
+.user-menu__item:hover { background: #f3f4f6 }
+
+
 /* ── Page heading ──────────────────────────────────────────────────────────── */
 .page-heading {
   display: flex;
@@ -926,8 +997,144 @@ button {
   flex-shrink: 0;
 }
 
+/* ── Strategy cards (Strategies page) ───────────────────────────────────────── */
+
+.strategy-cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.strategy-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 20px 22px;
+  cursor: pointer;
+  border: 2px solid transparent;
+  transition: transform 0.15s, box-shadow 0.15s;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.strategy-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.09);
+}
+
+.strategy-card--active {
+  border-color: #818cf8;
+}
+
+.strategy-card__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.strategy-card__title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #1a1a2e;
+}
+
+.strategy-card__runs {
+  font-size: 11px;
+  color: #aaa;
+  margin-top: 2px;
+}
+
+.strategy-card__metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.strategy-card__metric {
+  background: #f9f9fb;
+  border-radius: 10px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.strategy-card__metric-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.strategy-card__metric-value {
+  font-size: 16px;
+  font-weight: 800;
+  color: #1a1a2e;
+}
+
+/* ── OHLCV table (Data page) ─────────────────────────────────────────────────── */
+
+.ohlcv-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.ohlcv-table th {
+  text-align: left;
+  font-size: 11px;
+  font-weight: 600;
+  color: #aaa;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 8px 12px;
+  border-bottom: 1px solid #f0f0f0;
+  white-space: nowrap;
+}
+
+.ohlcv-table th.num,
+.ohlcv-table td.num {
+  text-align: right;
+}
+
+.ohlcv-table td {
+  padding: 11px 12px;
+  border-bottom: 1px solid #f9f9f9;
+  white-space: nowrap;
+  font-size: 13px;
+}
+
+.ohlcv-table tr:last-child td {
+  border-bottom: none;
+}
+
+.ohlcv-candle-high { color: #16a34a; font-weight: 600; }
+.ohlcv-candle-low  { color: #dc2626; font-weight: 600; }
+
+.ohlcv-stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+/* ── Analytics grid (Analytics page) ────────────────────────────────────────── */
+
+.analytics-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
 /* ── Responsive ────────────────────────────────────────────────────────────── */
 @media (max-width: 1100px) {
+  .strategy-cards-grid,
+  .analytics-grid {
+    grid-template-columns: 1fr;
+  }
+  .ohlcv-stats-row {
+    grid-template-columns: 1fr 1fr;
+  }
   .cards-grid {
     grid-template-columns: repeat(2, 1fr);
   }

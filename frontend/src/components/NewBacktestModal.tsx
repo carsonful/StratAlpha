@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { ChevronRight, X } from 'lucide-react'
 import type { NewBacktestConfig } from '../types'
+import SlippageSettings from './SlippageSettings'
 
+// Available options for the form dropdowns
 const SYMBOLS = ['BTC/USD', 'ETH/USD', 'SOL/USD'] as const
 const STRATEGIES = [
   'SMA Crossover',
@@ -13,6 +15,9 @@ const STRATEGIES = [
 type Symbol   = (typeof SYMBOLS)[number]
 type Strategy = (typeof STRATEGIES)[number]
 
+// Modal form for configuring and launching a new backtest
+// onSubmit — called with form data when user clicks "Run Backtest"
+// onClose  — called when user cancels or clicks outside the modal
 export default function NewBacktestModal({
   onSubmit,
   onClose,
@@ -20,19 +25,37 @@ export default function NewBacktestModal({
   onSubmit: (config: NewBacktestConfig) => void
   onClose:  () => void
 }) {
+  // Form field state
   const [symbol,         setSymbol]         = useState<Symbol>('BTC/USD')
   const [startDate,      setStartDate]      = useState('2024-01-01')
   const [endDate,        setEndDate]        = useState('2024-03-31')
   const [strategy,       setStrategy]       = useState<Strategy>('SMA Crossover')
   const [initialCapital, setInitialCapital] = useState(10000)
   const [commission,     setCommission]     = useState(0.1)
+  // Slippage controls (optional fields added to NewBacktestConfig)
+  const [slippageModel, setSlippageModel] = useState<NewBacktestConfig['slippageModel']>('volatility')
+  const [slippagePct,   setSlippagePct]   = useState<number>(0.1)
+  const [volatilityScale, setVolatilityScale] = useState<boolean>(true)
+  const [volumeScale, setVolumeScale] = useState<boolean>(false)
 
   function handleSubmit(e: React.FormEvent) {
-    e.preventDefault()
-    onSubmit({ symbol, startDate, endDate, strategy, initialCapital, commission })
+    e.preventDefault() // Prevent browser from reloading the page on form submit
+    onSubmit({
+      symbol,
+      startDate,
+      endDate,
+      strategy,
+      initialCapital,
+      commission,
+      slippageModel,
+      slippagePct,
+      volatilityScale,
+      volumeScale,
+    })
   }
 
   return (
+    // Clicking the backdrop closes the modal; clicking inside does not (stopPropagation)
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal" onClick={(e) => e.stopPropagation()}>
         <div className="modal__header">
@@ -119,6 +142,20 @@ export default function NewBacktestModal({
                   required
                 />
               </div>
+            </div>
+
+            <div className="modal__section">
+              <h3>Execution / Slippage</h3>
+              <SlippageSettings
+                model={slippageModel || 'none'}
+                pct={slippagePct}
+                volatilityScale={volatilityScale}
+                volumeScale={volumeScale}
+                onModelChange={(v) => setSlippageModel(v as NewBacktestConfig['slippageModel'])}
+                onPctChange={(v) => setSlippagePct(v)}
+                onVolatilityToggle={(v) => setVolatilityScale(v)}
+                onVolumeToggle={(v) => setVolumeScale(v)}
+              />
             </div>
           </div>
 
