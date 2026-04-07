@@ -1,4 +1,36 @@
 
+import { useLocation } from "react-router-dom";
+
+export default function Backtests() {
+  const location = useLocation();
+  const result = location.state?.result;
+
+   return (
+    <div style={{ padding: "16px" }}>
+      <h1>Backtests</h1>
+
+      {!result ? (
+        <p>No result yet.</p>
+      ) : (
+        <div>
+          <p>{result.message}</p>
+
+          {result.printedTexts && result.printedTexts.length > 0 ? (
+            <div>
+              <h3>Printed Text</h3>
+              {result.printedTexts.map((text: string, index: number) => (
+                <p key={index}>{text}</p>
+              ))}
+            </div>
+          ) : (
+            <p>No printed text found.</p>
+          )}
+        </div>
+      )}
+    </div>
+  );
+}
+/*
 import { useState } from "react";
 
 function Backtests() {
@@ -57,6 +89,7 @@ function Backtests() {
 }
 
 export default Backtests;
+*/
 
 /*import { useState } from "react";
 import Papa from "papaparse";

@@ -7,6 +7,11 @@
   padding: 0;
 }
 
+.blockly-workspace {
+  height: 500px;
+  width: 100%;
+}
+
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Inter', 'Segoe UI', sans-serif;
   background: #f5f4f0;
