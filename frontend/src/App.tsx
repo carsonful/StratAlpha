@@ -71,12 +71,17 @@ export default function App() {
   )
 
   useEffect(() => {
-    fetch(`${API_URL}/health`)
-      .then((res) => res.json())
-      .then((data) => {
-        setBackendStatus(data.status === 'healthy' ? 'connected' : 'disconnected')
-      })
-      .catch(() => setBackendStatus('disconnected'))
+    const check = () => {
+      fetch(`${API_URL}/health`)
+        .then((res) => res.json())
+        .then((data) => {
+          setBackendStatus(data.status === 'healthy' ? 'connected' : 'disconnected')
+        })
+        .catch(() => setBackendStatus('disconnected'))
+    }
+    check()
+    const interval = setInterval(check, 10000)
+    return () => clearInterval(interval)
   }, [])
 
   const statusColor =
