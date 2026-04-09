@@ -17,7 +17,7 @@ export default function Register({ onSwitch }: { onSwitch?: () => void }) {
       await register(name, email, password)
       // on success AuthProvider persists user and AuthGate will render the app
     } catch (err) {
-      setError('Failed to create account')
+      setError(err instanceof Error ? err.message : 'Failed to create account')
     } finally {
       setLoading(false)
     }

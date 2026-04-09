@@ -1,8 +1,9 @@
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import type { User } from '../types'
 
 type AuthContextValue = {
   user: User | null
+  initializing: boolean
   login: (email: string, password: string) => Promise<User>
   register: (name: string, email: string, password: string) => Promise<User>
   logout: () => void
@@ -10,44 +11,114 @@ type AuthContextValue = {
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 
-const STORAGE_KEY = 'fc_user'
+const USER_STORAGE_KEY = 'fc_user'
+const TOKEN_STORAGE_KEY = 'fc_token'
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+
+type AuthResponse = {
+  access_token: string
+  token_type: string
+  user: User
+}
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  // Do not auto-restore user from localStorage — require explicit sign-in click
-  // to enter the app. We still persist on login/register but we won't read it
-  // automatically on mount so a page reload always shows the sign-in screen.
   const [user, setUser] = useState<User | null>(null)
+  const [initializing, setInitializing] = useState(true)
 
-  function persist(u: User | null) {
+  useEffect(() => {
+    void restoreSession()
+  }, [])
+
+  async function restoreSession() {
+    const token = localStorage.getItem(TOKEN_STORAGE_KEY)
+    if (!token) {
+      setInitializing(false)
+      return
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/auth/me`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      if (!response.ok) {
+        throw new Error('Session expired')
+      }
+
+      const currentUser = (await response.json()) as User
+      persist(currentUser, token)
+    } catch {
+      persist(null, null)
+    } finally {
+      setInitializing(false)
+    }
+  }
+
+  function persist(u: User | null, token: string | null) {
     setUser(u)
     try {
-      if (u) localStorage.setItem(STORAGE_KEY, JSON.stringify(u))
-      else localStorage.removeItem(STORAGE_KEY)
+      if (u) localStorage.setItem(USER_STORAGE_KEY, JSON.stringify(u))
+      else localStorage.removeItem(USER_STORAGE_KEY)
+
+      if (token) localStorage.setItem(TOKEN_STORAGE_KEY, token)
+      else localStorage.removeItem(TOKEN_STORAGE_KEY)
     } catch {
       // ignore
     }
   }
 
-  async function login(email: string, _password: string) {
-    // Mock login — in a real app call backend API
-    const u: User = { id: String(Date.now()), name: email.split('@')[0], email }
-    persist(u)
-    return u
+  async function parseError(response: Response, fallback: string) {
+    try {
+      const data = (await response.json()) as { detail?: string }
+      return data.detail || fallback
+    } catch {
+      return fallback
+    }
   }
 
-  async function register(name: string, email: string, _password: string) {
-    // Mock register — in a real app call backend API
-    const u: User = { id: String(Date.now()), name, email }
-    persist(u)
-    return u
+  async function login(email: string, password: string) {
+    const response = await fetch(`${API_URL}/auth/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    })
+
+    if (!response.ok) {
+      throw new Error(await parseError(response, 'Failed to sign in'))
+    }
+
+    const data = (await response.json()) as AuthResponse
+    persist(data.user, data.access_token)
+    return data.user
+  }
+
+  async function register(name: string, email: string, password: string) {
+    const response = await fetch(`${API_URL}/auth/register`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ name, email, password }),
+    })
+
+    if (!response.ok) {
+      throw new Error(await parseError(response, 'Failed to create account'))
+    }
+
+    const data = (await response.json()) as AuthResponse
+    persist(data.user, data.access_token)
+    return data.user
   }
 
   function logout() {
-    persist(null)
+    persist(null, null)
   }
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout }}>
+    <AuthContext.Provider value={{ user, initializing, login, register, logout }}>
       {children}
     </AuthContext.Provider>
   )

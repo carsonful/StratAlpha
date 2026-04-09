@@ -16,7 +16,7 @@ export default function Login({ onSwitch }: { onSwitch?: () => void }) {
 			await login(email, password)
 			// on success AuthProvider persists user and AuthGate will render the app
 		} catch (err) {
-			setError('Failed to sign in')
+			setError(err instanceof Error ? err.message : 'Failed to sign in')
 		} finally {
 			setLoading(false)
 		}

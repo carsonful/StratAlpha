@@ -2,12 +2,14 @@
 import { useState } from "react";
 
 function Backtests() {
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [result, setResult] = useState(null);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [result, setResult] = useState<number | null>(null);
   const [error, setError] = useState("");
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
+    const file = files[0];
     if (!file) return;
     setSelectedFile(file);
     setError("");
