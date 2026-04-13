@@ -1,22 +1,24 @@
-#from fastapi import FastAPI
-#from fastapi.middleware.cors import CORSMiddleware
 import os
+import logging
 
-from fastapi import FastAPI, UploadFile, File
+from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from typing import Any, Dict, List
-import pandas as pd
-from io import StringIO
-from backtests1 import getBack
+from typing import Any, Dict, Optional
+
+from validator import validate_workspace
+from translator import translate
+from lean_runner import run_lean_backtest, LeanRunnerError
+from result_parser import parse_results
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
 app = FastAPI(
     title="Fight Club API",
-    version="1.0.0"
+    version="2.0.0",
 )
 
-# Allow the frontend to make requests to this backend (required when they run on different ports)
-origins = os.getenv("CORS_ORIGINS", "http://localhost:5173").split(",")
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],
@@ -26,7 +28,6 @@ app.add_middleware(
 )
 
 
-# Basic status check endpoints
 @app.get("/")
 async def root():
     return {"message": "Fight Club API is running"}
@@ -36,58 +37,83 @@ async def root():
 async def health_check():
     return {"status": "healthy"}
 
-# Start the server when this file is run directly
+
+class BacktestConfig(BaseModel):
+    resolution: str = "daily"
+    startDate: str = "2020-01-01"
+    endDate: str = "2024-12-31"
+    initialCash: float = 100000
+    maxPositions: int = 1
+
+
+class BlocklyRequest(BaseModel):
+    workspace: Dict[str, Any]
+    config: Optional[BacktestConfig] = None
+
+
+@app.post("/process-blocks")
+def process_blocks(data: BlocklyRequest):
+    config = data.config or BacktestConfig()
+    config_dict = config.model_dump()
+
+    errors, warnings = validate_workspace(data.workspace, config_dict)
+    if errors:
+        raise HTTPException(status_code=422, detail={
+            "errors": errors,
+            "warnings": warnings,
+        })
+
+    top_blocks = data.workspace.get("blocks", {}).get("blocks", [])
+    root = next((b for b in top_blocks if b.get("type") == "strategy_root"), None)
+    symbol = ""
+    if root:
+        symbol = (root.get("fields") or {}).get("SYMBOL", "").strip().upper()
+    config_dict["symbol"] = symbol
+
+    try:
+        code = translate(data.workspace, config_dict)
+    except Exception as e:
+        logger.exception("Translation failed")
+        raise HTTPException(status_code=400, detail={
+            "errors": [f"Failed to translate strategy: {e}"],
+            "warnings": warnings,
+        })
+
+    try:
+        result_paths = run_lean_backtest(code)
+    except LeanRunnerError as e:
+        logger.error(f"LEAN runner error: {e}")
+        raise HTTPException(status_code=500, detail={
+            "errors": [str(e)],
+            "warnings": warnings,
+        })
+    except Exception as e:
+        logger.exception("Unexpected error running backtest")
+        raise HTTPException(status_code=500, detail={
+            "errors": [f"Unexpected error running backtest: {e}"],
+            "warnings": warnings,
+        })
+
+    try:
+        backtest_run = parse_results(result_paths, config_dict)
+    except Exception as e:
+        logger.exception("Failed to parse results")
+        raise HTTPException(status_code=500, detail={
+            "errors": [f"Backtest ran but failed to parse results: {e}"],
+            "warnings": warnings,
+        })
+
+    if warnings:
+        backtest_run["warnings"] = warnings
+
+    return backtest_run
+
+
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(
         "main:app",
         host=os.getenv("API_HOST", "0.0.0.0"),
         port=int(os.getenv("API_PORT", 8000)),
-        reload=True
+        reload=True,
     )
-
-
-class BlocklyRequest(BaseModel):
-    workspace: Dict[str, Any]
-
-def _find_print_text(block: Dict[str, Any], found: List[str]) -> None:
-    if not isinstance(block, dict):
-        return
-    if block.get("type") == "text_print":
-        text_block = block.get("inputs", {}).get("TEXT", {}).get("block", {})
-        if text_block.get("type") == "text":
-            val = text_block.get("fields", {}).get("TEXT", "")
-            if val:
-                found.append(val)
-    for input_data in block.get("inputs", {}).values():
-        child = input_data.get("block")
-        if child:
-            _find_print_text(child, found)
-    next_block = block.get("next", {}).get("block")
-    if next_block:
-        _find_print_text(next_block, found)
-
-@app.post("/process-blocks")
-def process_blocks(data: BlocklyRequest):
-    found: List[str] = []
-    for block in data.workspace.get("blocks", {}).get("blocks", []):
-        _find_print_text(block, found)
-    return {"message": "Blocks processed successfully", "printedTexts": found}
-
-
-@app.post("/backtest")
-async def max_open(file: UploadFile = File(...)):
-    contents = await file.read()
-    csv_text = contents.decode("utf-8")
-    #df = pd.read_csv(StringIO(csv_text), sep="\t")
-
-    df = pd.read_csv(StringIO(csv_text), sep=None, engine="python")
-    df.columns = df.columns.str.strip()
-
-
-    try:
-        val = getBack(df)
-        return {"getBack": val}
-    except ValueError as e:
-        return {"error": str(e)}
-    
