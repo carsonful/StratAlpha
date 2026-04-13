@@ -1,11 +1,12 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+import { BrowserRouter } from "react-router-dom";
 import App from './App.tsx'
 import { AuthProvider } from './context/Auth'
 import AuthGate from './components/AuthGate'
 
 // Mount the React app into the <div id="root"> in index.html
-ReactDOM.createRoot(document.getElementById('root')!).render(
+/*ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
     <AuthProvider>
       <AuthGate>
@@ -13,4 +14,15 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
       </AuthGate>
     </AuthProvider>
   </React.StrictMode>,
-)
+)*/AnalyserNode
+ReactDOM.createRoot(document.getElementById('root')!).render(
+  <React.StrictMode>
+    <BrowserRouter>
+      <AuthProvider>
+        <AuthGate>
+          <App />
+        </AuthGate>
+      </AuthProvider>
+    </BrowserRouter>
+  </React.StrictMode>,
+);

@@ -1,0 +1,155 @@
+.page {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  border-bottom: 1px solid #ddd;
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+}
+
+.topbar h1 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.canvas-area {
+  flex: 1;
+  min-height: 0;
+  position: relative;
+}
+
+.workspace {
+  width: 100%;
+  height: 100%;
+}
+
+/* ── Floating Config Card ── */
+
+.floating-config {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  width: 300px;
+  max-height: calc(100% - 32px);
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  pointer-events: auto;
+}
+
+/* ── Config Panel internals ── */
+
+.config-panel {
+  padding: 12px 16px;
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  font-size: 13px;
+}
+
+.config-panel h2 {
+  margin: 0 0 12px;
+  font-size: 15px;
+}
+
+.config-section {
+  margin-bottom: 4px;
+}
+
+.config-section-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 8px 4px;
+  border: none;
+  background: none;
+  font-size: 13px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  color: #333;
+  border-bottom: 1px solid #eee;
+}
+
+.config-section-header:hover {
+  background: #f5f5f5;
+  border-radius: 4px;
+}
+
+.config-arrow {
+  font-size: 10px;
+  width: 12px;
+  text-align: center;
+}
+
+.config-section-body {
+  padding: 8px 0 8px 18px;
+}
+
+.config-field {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.config-field span {
+  white-space: nowrap;
+  color: #555;
+}
+
+.config-field input,
+.config-field select {
+  width: 120px;
+  padding: 4px 6px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 13px;
+  font-family: inherit;
+}
+
+.config-field input[type='number'] {
+  width: 70px;
+}
+
+.config-field input[type='date'] {
+  width: 120px;
+}
+
+/* ── Toggle rows ── */
+
+.config-toggle-group {
+  margin-bottom: 8px;
+}
+
+.config-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.config-toggle input[type='checkbox'] {
+  width: 16px;
+  height: 16px;
+  accent-color: #5c6bc0;
+  cursor: pointer;
+}
+
+.config-toggle span {
+  color: #333;
+}
+
+.config-toggle-body {
+  padding: 6px 0 0 22px;
+}

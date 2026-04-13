@@ -32,7 +32,9 @@ trap cleanup SIGINT SIGTERM
 echo "Starting backend..."
 cd backend
 source venv/bin/activate
-python -m uvicorn src.main:app --reload --port 8000 &
+cd src
+uvicorn main:app --reload --port 8000 &
+cd ..
 cd ..
 
 sleep 2

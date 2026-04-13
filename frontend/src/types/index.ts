@@ -37,11 +37,18 @@ export interface BacktestRun {
   commission:     number
   totalReturn:    string
   sharpe:         number
+  sortino:        number
   maxDrawdown:    string
   winRate:        string
   trades:         number
   avgDuration:    string
+  annualReturn:   string
+  alpha:          number
+  beta:           number
+  startEquity:    number
+  endEquity:      number
   status:         'complete' | 'running' | 'failed'
+  errorMessage?:  string
   equityCurve:    EquityPoint[]
   tradeLog:       TradeLogEntry[]
 }
@@ -99,6 +106,7 @@ export interface User {
 export type NavKey =
   | 'dashboard'
   | 'backtests'
+  | 'block'
   | 'strategies'
   | 'data'
   | 'analytics'

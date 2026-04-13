@@ -1,0 +1,83 @@
+2026-04-13T18:55:09.2753258Z TRACE:: Engine.Main(): LEAN ALGORITHMIC TRADING ENGINE v2.5.0.0 Mode: DEBUG (64bit) Host: Cole_Laptop
+2026-04-13T18:55:09.2844192Z TRACE:: Engine.Main(): Started 6:55 PM
+2026-04-13T18:55:09.3134041Z TRACE:: JobQueue.NextJob(): Selected /LeanCLI/main.py
+2026-04-13T18:55:09.3875516Z TRACE:: AlgorithmManager.CreateTokenBucket(): Initializing LeakyBucket: Capacity: 120 RefillAmount: 18 TimeInterval: 1440
+2026-04-13T18:55:09.3958709Z TRACE:: Engine.Run(): Resource limits '0' CPUs. 2147483647 MB RAM.
+2026-04-13T18:55:09.3971639Z TRACE:: TextSubscriptionDataSourceReader.SetCacheSize(): Setting cache size to 71582788 items
+2026-04-13T18:55:10.2744077Z TRACE:: PythonInitializer.Initialize(): start...
+2026-04-13T18:55:10.5133469Z TRACE:: PythonInitializer.Initialize(): ended
+2026-04-13T18:55:10.5153665Z TRACE:: AlgorithmPythonWrapper(): Python version 3.11.14 (main, Oct 21 2025, 18:40:40) [GCC 11.2.0]: Importing python module main
+2026-04-13T18:55:13.5549161Z TRACE:: AlgorithmPythonWrapper(): main successfully imported.
+2026-04-13T18:55:13.5617262Z TRACE:: AlgorithmPythonWrapper(): Creating IAlgorithm instance.
+2026-04-13T18:55:13.7876475Z TRACE:: LocalObjectStore.Initialize(): Storage Root: /Storage. StorageFileCount 9999999. StorageLimit 10240MB. StoragePermissions Read=True Write=True Delete=True
+2026-04-13T18:55:13.8014429Z TRACE:: HistoryProviderManager.Initialize(): history providers [SubscriptionDataReaderHistoryProvider]
+2026-04-13T18:55:13.8064652Z TRACE:: BaseSetupHandler.Setup(LocalPlatform): UID: 268230, PID: -1, Version: 2.5.0.0, Source: WebIDE
+2026-04-13T18:55:13.9518770Z TRACE:: BacktestingResultHandler(): Sample Period Set: 657.72
+2026-04-13T18:55:13.9902390Z ERROR:: Engine.Run(): During the algorithm initialization, the following exception has occurred: Trying to dynamically access a method that does not exist throws a TypeError exception. To prevent the exception, ensure each parameter type matches those required by the 'QuantConnect.Resolution'>) method. Please checkout the API documentation.
+  at initialize
+    self._ind_1 = self.bb(self.symbol, 20, 3.0, Resolution.DAILY)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ in main.py: line 11
+ No method matches given arguments for BB: (<class 'QuantConnect.Symbol'>, <class 'int'>, <class 'float'>, <class 'QuantConnect.Resolution'>)
+2026-04-13T18:55:13.9914168Z TRACE:: JOB HANDLERS:
+         DataFeed:             QuantConnect.Lean.Engine.DataFeeds.FileSystemDataFeed
+         Setup:                QuantConnect.Lean.Engine.Setup.BacktestingSetupHandler
+         RealTime:             QuantConnect.Lean.Engine.RealTime.BacktestingRealTimeHandler
+         Results:              QuantConnect.Lean.Engine.Results.BacktestingResultHandler
+         Transactions:         QuantConnect.Lean.Engine.TransactionHandlers.BacktestingTransactionHandler
+         Object Store:         QuantConnect.Lean.Engine.Storage.LocalObjectStore
+         History Provider:     QuantConnect.Lean.Engine.HistoricalData.HistoryProviderManager
+         Brokerage:            QuantConnect.Brokerages.Backtesting.BacktestingBrokerage
+         Data Provider:        QuantConnect.Lean.Engine.DataFeeds.DefaultDataProvider
+
+2026-04-13T18:55:13.9921617Z TRACE:: FileSystemDataFeed.Exit(): Start. Setting cancellation token...
+2026-04-13T18:55:13.9937628Z TRACE:: FileSystemDataFeed.Exit(): Exit Finished.
+2026-04-13T18:55:13.9943958Z TRACE:: BacktestingResultHandler.Exit(): starting...
+2026-04-13T18:55:14.0059089Z TRACE:: BacktestingResultHandler.Exit(): Saving logs...
+2026-04-13T18:55:14.0125525Z TRACE:: StopSafely(): Waiting for 'Result Thread' thread to stop...
+2026-04-13T18:55:14.0125652Z ERROR:: During the algorithm initialization, the following exception has occurred: Trying to dynamically access a method that does not exist throws a TypeError exception. To prevent the exception, ensure each parameter type matches those required by the 'QuantConnect.Resolution'>) method. Please checkout the API documentation.
+  at initialize
+    self._ind_1 = self.bb(self.symbol, 20, 3.0, Resolution.DAILY)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ in main.py: line 11
+ No method matches given arguments for BB: (<class 'QuantConnect.Symbol'>, <class 'int'>, <class 'float'>, <class 'QuantConnect.Resolution'>)
+ Trying to dynamically access a method that does not exist throws a TypeError exception. To prevent the exception, ensure each parameter type matches those required by the 'QuantConnect.Resolution'>) method. Please checkout the API documentation.
+  at initialize
+    self._ind_1 = self.bb(self.symbol, 20, 3.0, Resolution.DAILY)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+ in main.py: line 11
+ No method matches given arguments for BB: (<class 'QuantConnect.Symbol'>, <class 'int'>, <class 'float'>, <class 'QuantConnect.Resolution'>)
+2026-04-13T18:55:14.0133595Z TRACE:: Debug: Your log was successfully created and can be retrieved from: /Results/1326187036-log.txt
+2026-04-13T18:55:14.0135930Z TRACE:: BacktestingResultHandler.Run(): Ending Thread...
+2026-04-13T18:55:14.1323753Z TRACE:: WeightedWorkScheduler(): will use 12 workers and MaxWorkWeight is 400
+2026-04-13T18:55:14.2639186Z ERROR:: BacktestingResultHandler.SendFinalResult(): Error running backtest analysis System.InvalidOperationException: Sequence contains no elements
+   at System.Linq.ThrowHelper.ThrowNoElementsException()
+   at System.Linq.Enumerable.First[TSource](IEnumerable`1 source)
+   at QuantConnect.Lean.Engine.Results.Analysis.ResultsAnalyzer.ReadEquityCurve(Result result, QCAlgorithm algorithm) in Engine/Results/Analysis/ResultsAnalyzer.cs:line 175
+   at QuantConnect.Lean.Engine.Results.Analysis.ResultsAnalyzer.Run(Int32 timeLimitSeconds, Int32 maxFailedAnalyses) in Engine/Results/Analysis/ResultsAnalyzer.cs:line 65
+   at QuantConnect.Lean.Engine.Results.BacktestingResultHandler.SendFinalResult() in Engine/Results/BacktestingResultHandler.cs:line 420
+2026-04-13T18:55:14.2910299Z TRACE:: 
+STATISTICS:: OrderListHash d41d8cd98f00b204e9800998ecf8427e
+2026-04-13T18:55:14.2915824Z TRACE:: BacktestingResultHandler.SendAnalysisResult(): Processed final packet
+2026-04-13T18:55:14.2930431Z TRACE:: Engine.Run(): Disconnecting from brokerage...
+2026-04-13T18:55:14.2937419Z TRACE:: Engine.Run(): Disposing of setup handler...
+2026-04-13T18:55:14.2940621Z TRACE:: Engine.Main(): Analysis Completed and Results Posted.
+2026-04-13T18:55:14.2974269Z TRACE:: DataMonitor.Exit(): start...
+2026-04-13T18:55:14.2978754Z TRACE:: StopSafely(): Waiting for '' thread to stop...
+2026-04-13T18:55:14.3015314Z TRACE:: DataMonitor.GenerateReport():
+DATA USAGE:: Total data requests 1
+DATA USAGE:: Succeeded data requests 1
+DATA USAGE:: Failed data requests 0
+DATA USAGE:: Failed data requests percentage 0%
+DATA USAGE:: Total universe data requests 0
+DATA USAGE:: Succeeded universe data requests 0
+DATA USAGE:: Failed universe data requests 0
+DATA USAGE:: Failed universe data requests percentage 0%
+2026-04-13T18:55:14.3130584Z TRACE:: DataMonitor.Exit(): end
+2026-04-13T18:55:14.3174232Z TRACE:: Engine.Main(): Packet removed from queue: 1326187036
+2026-04-13T18:55:14.3179474Z TRACE:: LeanEngineSystemHandlers.Dispose(): start...
+2026-04-13T18:55:14.3196418Z TRACE:: LeanEngineSystemHandlers.Dispose(): Disposed of system handlers.
+2026-04-13T18:55:14.3201615Z TRACE:: LeanEngineAlgorithmHandlers.Dispose(): start...
+2026-04-13T18:55:14.3222372Z TRACE:: LocalObjectStore.Dispose(): start...
+2026-04-13T18:55:14.3231318Z TRACE:: LocalObjectStore.Dispose(): end
+2026-04-13T18:55:14.3236809Z TRACE:: LeanEngineAlgorithmHandlers.Dispose(): Disposed of algorithm handlers.

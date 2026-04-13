@@ -1,0 +1,3 @@
+Launching analysis for 1148996984 with LEAN Engine v2.5.0.0
+2020-02-05 16:00:00 Warning: all market orders sent using daily data, or market orders sent after hours are automatically converted into MarketOnOpen orders.
+Algorithm Id:(1148996984) completed in 1.05 seconds at 3k data points per second. Processing total of 3,465 data points.

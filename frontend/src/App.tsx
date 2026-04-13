@@ -1,4 +1,6 @@
+
 import { useState, useEffect, useRef } from 'react'
+import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import {
   LayoutDashboard,
   TrendingUp,
@@ -14,6 +16,208 @@ import {
 } from 'lucide-react'
 import Dashboard from './pages/Dashboard'
 import Backtests from './pages/Backtests'
+import Block from './pages/Block'
+import Analytics from './pages/Analytics'
+import Data from './pages/Data'
+import Strategies from './pages/Strategies'
+import SettingsPage from './pages/Settings'
+
+import type { NavKey } from './types'
+import { useAuth } from './context/Auth'
+import './index.css'
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
+
+// Sidebar navigation items
+const NAV_ITEMS: { icon: React.ReactNode; label: string; key: NavKey; path: string }[] = [
+  { icon: <LayoutDashboard size={18} />, label: 'Dashboard', key: 'dashboard', path: '/' },
+  { icon: <TrendingUp size={18} />, label: 'Backtests', key: 'backtests', path: '/backtests' },
+  { icon: <TrendingUp size={18} />, label: 'Block', key: 'block', path: '/block' },
+  { icon: <Zap size={18} />, label: 'Strategies', key: 'strategies', path: '/strategies' },
+  { icon: <Database size={18} />, label: 'Data', key: 'data', path: '/data' },
+  { icon: <BarChart2 size={18} />, label: 'Analytics', key: 'analytics', path: '/analytics' },
+]
+
+const TOOL_ITEMS: { icon: React.ReactNode; label: string; key: NavKey; path: string }[] = [
+  { icon: <ShieldCheck size={18} />, label: 'Risk Monitor', key: 'risk', path: '/risk' },
+  { icon: <Settings size={18} />, label: 'Settings', key: 'settings', path: '/settings' },
+]
+
+export default function App() {
+  const navigate = useNavigate()
+  const location = useLocation()
+
+  const { user, logout } = useAuth()
+  const [showUserMenu, setShowUserMenu] = useState(false)
+  const avatarRef = useRef<HTMLDivElement | null>(null)
+  const menuRef = useRef<HTMLDivElement | null>(null)
+
+  // Close user menu when clicking outside
+  useEffect(() => {
+    function onDocClick(e: MouseEvent) {
+      const target = e.target as Node
+      if (!avatarRef?.current || !menuRef?.current) return
+      if (!avatarRef.current.contains(target) && !menuRef.current.contains(target)) {
+        setShowUserMenu(false)
+      }
+    }
+    document.addEventListener('mousedown', onDocClick)
+    return () => document.removeEventListener('mousedown', onDocClick)
+  }, [])
+
+  // Check if the backend is reachable and show a status indicator in the topbar
+  const [backendStatus, setBackendStatus] = useState<'checking' | 'connected' | 'disconnected'>(
+    'checking',
+  )
+
+  useEffect(() => {
+    const check = () => {
+      fetch(`${API_URL}/health`)
+        .then((res) => res.json())
+        .then((data) => {
+          setBackendStatus(data.status === 'healthy' ? 'connected' : 'disconnected')
+        })
+        .catch(() => setBackendStatus('disconnected'))
+    }
+    check()
+    const interval = setInterval(check, 10000)
+    return () => clearInterval(interval)
+  }, [])
+
+  const statusColor =
+    backendStatus === 'connected' ? '#4ade80' : backendStatus === 'checking' ? '#facc15' : '#f87171'
+
+  return (
+    <div className="app-root">
+      {/* Sidebar */}
+      <aside className="sidebar">
+        <div className="sidebar-logo">
+          <span className="logo-mark">FC</span>
+          <span className="logo-text">FightClub</span>
+        </div>
+
+        <nav className="sidebar-nav">
+          <span className="nav-section-label">General</span>
+          {NAV_ITEMS.map((item) => (
+            <button
+              key={item.key}
+              className={`nav-item${location.pathname === item.path ? ' nav-item--active' : ''}`}
+              onClick={() => navigate(item.path)}
+            >
+              {item.icon}
+              <span>{item.label}</span>
+            </button>
+          ))}
+        </nav>
+
+        <nav className="sidebar-nav sidebar-nav--tools">
+          <span className="nav-section-label">Tools</span>
+          {TOOL_ITEMS.map((item) => (
+            <button
+              key={item.key}
+              className={`nav-item${location.pathname === item.path ? ' nav-item--active' : ''}`}
+              onClick={() => navigate(item.path)}
+            >
+              {item.icon}
+              <span>{item.label}</span>
+            </button>
+          ))}
+        </nav>
+
+        <div className="sidebar-footer">
+          <button className="nav-item nav-item--danger" onClick={() => logout()}>
+            <LogOut size={18} />
+            <span>Log out</span>
+          </button>
+        </div>
+      </aside>
+
+      {/* Main content area */}
+      <main className="main-content">
+        <header className="topbar">
+          <div className="search-bar">
+            <Search size={16} className="search-icon" />
+            <input placeholder="Search strategies, symbols..." />
+          </div>
+          <div className="topbar-right">
+            <div className="status-pill">
+              <Circle size={8} fill={statusColor} stroke="none" />
+              <span>API {backendStatus}</span>
+            </div>
+
+            <button className="icon-btn" aria-label="Notifications">
+              <Bell size={18} />
+            </button>
+
+            <div
+              className="avatar"
+              role="button"
+              ref={avatarRef as any}
+              onClick={() => setShowUserMenu((s) => !s)}
+              aria-label="User menu"
+            >
+              {user ? user.name.split(' ').map((n: string) => n[0]).slice(0, 2).join('') : 'TC'}
+            </div>
+
+            {showUserMenu && (
+              <div className="user-menu" ref={menuRef as any}>
+                <div
+                  className="user-menu__item"
+                  onClick={() => {
+                    navigate('/settings')
+                    setShowUserMenu(false)
+                  }}
+                >
+                  User settings
+                </div>
+                <div
+                  className="user-menu__item"
+                  onClick={() => {
+                    logout()
+                    setShowUserMenu(false)
+                  }}
+                >
+                  Sign out
+                </div>
+              </div>
+            )}
+          </div>
+        </header>
+
+        <div className="page-content">
+          <Routes>
+            <Route path="/" element={<Dashboard />} />
+            <Route path="/backtests" element={<Backtests />} />
+            <Route path="/block" element={<Block />} />
+            <Route path="/strategies" element={<Strategies />} />
+            <Route path="/data" element={<Data />} />
+            <Route path="/analytics" element={<Analytics />} />
+            <Route path="/settings" element={<SettingsPage />} />
+          </Routes>
+        </div>
+      </main>
+    </div>
+  )
+}
+
+/*import { useState, useEffect, useRef } from 'react'
+import { Routes, Route } from "react-router-dom"; //
+import {
+  LayoutDashboard,
+  TrendingUp,
+  Database,
+  BarChart2,
+  Settings,
+  LogOut,
+  Bell,
+  Search,
+  Zap,
+  ShieldCheck,
+  Circle,
+} from 'lucide-react'
+import Dashboard from './pages/Dashboard'
+import Backtests from './pages/Backtests'
+import Block from './pages/Block'
 
 import Analytics  from './pages/Analytics'
 //import Backtests  from './pages/Backtests'
@@ -32,6 +236,7 @@ const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:8000'
 const NAV_ITEMS: { icon: React.ReactNode; label: string; key: NavKey }[] = [
   { icon: <LayoutDashboard size={18} />, label: 'Dashboard', key: 'dashboard' },
   { icon: <TrendingUp size={18} />, label: 'Backtests', key: 'backtests' },
+  { icon: <TrendingUp size={18} />, label: 'Block', key: 'block' },
   { icon: <Zap size={18} />, label: 'Strategies', key: 'strategies' },
   { icon: <Database size={18} />, label: 'Data', key: 'data' },
   { icon: <BarChart2 size={18} />, label: 'Analytics', key: 'analytics' },
@@ -48,9 +253,10 @@ function PageContent({ activeNav }: { activeNav: NavKey }) {
     /*case 'dashboard':
       return <Dashboard />
     case 'backtests':
-      return <Backtests />*/
+      return <Backtests />
     case 'dashboard':  return <Dashboard />
     case 'backtests':  return <Backtests />
+    case 'block':  return <Block />
     case 'strategies': return <Strategies />
     case 'data':       return <Data />
     case 'analytics':  return <Analytics />
@@ -104,8 +310,9 @@ export default function App() {
     backendStatus === 'connected' ? '#4ade80' : backendStatus === 'checking' ? '#facc15' : '#f87171'
 
   return (
+    
     <div className="app-root">
-      {/* Sidebar */}
+      //sidebar
       <aside className="sidebar">
         <div className="sidebar-logo">
           <span className="logo-mark">FC</span>
@@ -148,7 +355,8 @@ export default function App() {
         </div>
       </aside>
 
-      {/* Main content area */}
+      
+      //content area
       <main className="main-content">
         <header className="topbar">
           <div className="search-bar">
@@ -156,7 +364,7 @@ export default function App() {
             <input placeholder="Search strategies, symbols..." />
           </div>
             <div className="topbar-right">
-            {/* API connection status dot */}
+            //api connection status dot
             <div className="status-pill">
               <Circle size={8} fill={statusColor} stroke="none" />
               <span>API {backendStatus}</span>
@@ -200,3 +408,4 @@ export default function App() {
     </div>
   )
 }
+*/
